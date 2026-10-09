@@ -1,11 +1,11 @@
-n, k = map(int, input().split())
+m, k = map(int, input().split())
 arr = list(map(int, input().split()))
 
 left = 0
 neg = 0
 best = 0
 
-for right in range(n):
+for right in range(m):
     if arr[right] < 0:
         neg += 1
     while neg > k:
