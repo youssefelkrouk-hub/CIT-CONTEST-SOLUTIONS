@@ -4,6 +4,12 @@ Python solutions and problem statements for the **CIT's CONTEST** on HackerRank.
 The story: in 2026 THE CRASH hit the CIT Network, and you play an Operator who must
 restore THE CORE by solving a series of problems.
 
+<!-- Option 1 : Image centrée et responsive (Recommandé pour les grandes illustrations) -->
+<p align="center">
+  <img src="img/story.jfif" alt="CIT's Contest - The Crash" width="100%">
+</p>
+
+
 ## Repository Structure
 
 Each problem has its own folder with two files:
