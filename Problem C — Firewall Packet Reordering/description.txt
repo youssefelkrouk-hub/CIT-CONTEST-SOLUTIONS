@@ -1,0 +1,34 @@
+Problem C — Firewall Packet Reordering
+
+Upon approaching the Main District Gate, the Operator encounters a high-frequency packet stream scrambled by the city's corrupted central security firewall. The stream consists of an array of n data packets a_1, a_2, ..., a_n.
+
+Standard packets carry non-negative integers (a_i >= 0), while corrupted packets carry negative integers (a_i < 0).
+
+To bypass the firewall filter without triggering an alert, you must locate the maximum length of a contiguous sequence of packets that contains at most k corrupted packets.
+
+Input Format
+The first line contains two space-separated integers n and k — the total number of packets and the maximum allowed corrupted packets in a window.
+The second line contains n space-separated integers a_1, a_2, ..., a_n representing the packet stream.
+
+Output Format
+Print a single integer — the maximum length of a valid contiguous packet sequence.
+
+Sample Input 0
+7 2
+1 -2 3 4 -5 -6 7
+
+Sample Output 0
+5
+
+Explanation 0
+The corrupted packets are those where a_i < 0 (i.e., -2, -5, -6). The longest contiguous subarray containing at most k = 2 negative integers is [1, -2, 3, 4, -5], which has a length of 5 and contains 2 negative numbers.
+
+Sample Input 1
+6 0
+1 0 -1 2 3 -4
+
+Sample Output 1
+2
+
+Explanation 1
+With k = 0, no negative numbers are allowed in the subarray. The non-negative integers are a_i >= 0 (note that 0 counts as standard/non-corrupted). The longest valid subarray of non-negative integers is [2, 3] (or [1, 0]), both of length 2.
