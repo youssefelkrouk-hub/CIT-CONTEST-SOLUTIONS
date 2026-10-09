@@ -1,7 +1,7 @@
 n, t = map(int, input().split())
 arr = list(map(int, input().split()))
-
-pos = {}  # valeur -> liste des indices (1-based) en ordre croissant
+# write your code here 
+pos = {}  # value -> list of indices (1-based) in increasing order
 for idx, v in enumerate(arr, 1):
     pos.setdefault(v, []).append(idx)
 
