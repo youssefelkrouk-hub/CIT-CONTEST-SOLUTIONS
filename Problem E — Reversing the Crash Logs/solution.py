@@ -1,13 +1,21 @@
+
+N = int(input())
+strings = input().split()
+# write your code here
+
 import sys
 
-data = sys.stdin.read().split()
-n = int(data[0])
-logs = data[1:1 + n]
+# si les logs sont donnes un par ligne, on lit le reste
+while len(strings) < N:
+    line = sys.stdin.readline()
+    if not line: 
+        break
+    strings += line.split()
 
 target = "citlogin"[::-1]
 
 count = 0
-for s in logs:
+for s in strings[:N]:
     if target in s:
         count += 1
 
