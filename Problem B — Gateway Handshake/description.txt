@@ -1,0 +1,30 @@
+Problem B — Gateway Handshake
+
+You are given n port authentication tokens a_1, a_2, ..., a_n and a target Handshake Frequency T. To complete the handshake, you must find two distinct port indices i and j (i < j) such that the sum of their tokens equals the target frequency: a_i + a_j = T.
+
+If multiple valid pairs exist, choose the pair with the smallest index i. If a tie remains, choose the pair with the smallest index j. If no such pair exists, report that the handshake failed.
+
+Input Format
+The first line contains two space-separated integers n and T.
+The second line contains n space-separated integers a_1, a_2, ..., a_n.
+
+Output Format
+Print two space-separated 1-based indices i and j (i < j) representing the matching ports.
+If no matching pair exists, print -1 -1.
+
+Sample Input 0
+5 10
+2 7 11 15 3
+
+Sample Output 0
+2 5
+
+Explanation 0
+a_2 + a_5 = 7 + 3 = 10. The 1-based indices are 2 and 5.
+
+Sample Input 1
+4 5
+1 2 8 9
+
+Sample Output 1
+-1 -1
