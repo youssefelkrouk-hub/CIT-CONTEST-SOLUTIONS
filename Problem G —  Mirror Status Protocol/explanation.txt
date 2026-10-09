@@ -1,0 +1,181 @@
+Problem G - Mirror Status Protocol
+Explanation of the solution
+==================================================
+
+THE PROBLEM IN ONE SENTENCE
+---------------------------
+We receive N words (fragments). We must count how many "mirror pairs"
+exist (a word and its exact reverse), then print a status code:
+
+    STATUS_CODE PAIR_COUNT
+
+Special rule: a palindrome (a word equal to its own reverse, like "aba")
+can only pair with another identical word.
+
+
+THE CODE
+--------
+N = int(input())
+strings = input().split()
+# write your code here
+
+count = {}
+for s in strings:
+    if s in count:
+        count[s] = count[s] + 1
+    else:
+        count[s] = 1
+
+pairs = 0
+odd_palindrome = False
+
+for s in count:
+    r = s[::-1]
+    if s == r:
+        pairs = pairs + count[s] // 2
+        if count[s] % 2 == 1:
+            odd_palindrome = True
+    elif s < r and r in count:
+        pairs = pairs + min(count[s], count[r])
+
+if len(strings) != N:
+    print(500, 0)
+elif odd_palindrome:
+    print(412, pairs)
+elif pairs == 0:
+    print(404, pairs)
+elif 2 * pairs == N:
+    print(200, pairs)
+else:
+    print(202, pairs)
+
+
+STEP 1 - READ THE INPUT
+-----------------------
+    N = int(input())
+    strings = input().split()
+
+- N is the number of fragments announced.
+- strings is the list of fragments. split() cuts the line at spaces and
+  keeps each fragment as text.
+  Example: "abc cba Core eroC xyz" -> ["abc", "cba", "Core", "eroC", "xyz"]
+- Note: the HackerRank template uses map(int, ...) on this line, but
+  that crashes on words like "abc", so we do not convert to int.
+
+
+STEP 2 - COUNT EACH FRAGMENT
+----------------------------
+    count = {}
+    for s in strings:
+        if s in count:
+            count[s] = count[s] + 1
+        else:
+            count[s] = 1
+
+- count is a dictionary: key = the word, value = how many times it appears.
+- Example: "abc cba cba aba aba aba"
+      count = {"abc": 1, "cba": 2, "aba": 3}
+- Why a dictionary? Checking if a word exists ("cba" in count) is
+  instant. Scanning the whole list each time would be too slow for
+  N = 100000.
+
+
+STEP 3 - COUNT THE PAIRS
+------------------------
+    pairs = 0
+    odd_palindrome = False
+
+- pairs: total number of mirror pairs found.
+- odd_palindrome: becomes True if a palindrome is left alone.
+
+    for s in count:
+        r = s[::-1]
+
+- We loop over the DIFFERENT words (the keys of count).
+- r is the reverse of s. Example: s = "abc" -> r = "cba".
+
+CASE 1: s == r (palindrome, like "aba")
+    pairs = pairs + count[s] // 2
+    if count[s] % 2 == 1:
+        odd_palindrome = True
+
+- A palindrome can only pair with an identical word.
+- count // 2 = number of pairs formed.
+- If count is odd (count % 2 == 1), one copy is left alone, so
+  odd_palindrome = True.
+- Example: "aba" appears 3 times -> 3 // 2 = 1 pair, 1 left alone.
+- Example: "aba" appears 4 times -> 2 pairs, none left alone.
+
+CASE 2: s != r (normal word, like "abc")
+    elif s < r and r in count:
+        pairs = pairs + min(count[s], count[r])
+
+- "r in count": the reverse must exist in the list, otherwise no pair.
+- min(count[s], count[r]): we can only form as many pairs as the
+  smaller count.
+  Example: "abc" x1 and "cba" x2 -> min(1, 2) = 1 pair.
+- "s < r" (alphabetical order): avoids counting the same pair twice.
+  When s = "abc", r = "cba": "abc" < "cba" is True  -> counted.
+  When s = "cba", r = "abc": "cba" < "abc" is False -> ignored.
+
+
+STEP 4 - CHOOSE THE STATUS CODE
+-------------------------------
+The statement gives a priority order. In Python, if / elif / else does
+exactly that: the first true condition wins.
+
+    if len(strings) != N:        -> 500  (malformed input)
+    elif odd_palindrome:         -> 412  (a palindrome is left alone)
+    elif pairs == 0:             -> 404  (no pairs at all)
+    elif 2 * pairs == N:         -> 200  (everything is paired)
+    else:                        -> 202  (some fragments are unpaired)
+
+- Why 2 * pairs == N? Each pair has 2 words. If every word is paired,
+  2 x pairs must equal N.
+- PAIR_COUNT (pairs) is always printed, whatever the code is.
+
+
+FULL EXAMPLE
+------------
+Input:
+    5
+    abc cba Core eroC xyz
+
+1. count = {"abc":1, "cba":1, "Core":1, "eroC":1, "xyz":1}
+2. s = "abc"  -> r = "cba", "abc" < "cba", exists   -> +1 pair
+3. s = "cba"  -> r = "abc", "cba" < "abc" is False  -> ignored
+4. s = "Core" -> r = "eroC", "Core" < "eroC", exists -> +1 pair
+5. s = "eroC" -> ignored
+6. s = "xyz"  -> r = "zyx", not in count            -> nothing
+7. pairs = 2, no lonely palindrome, pairs != 0,
+   2 * 2 = 4 which is not 5  -> code 202
+
+Output:
+    202 2
+
+
+OTHER EXAMPLES
+--------------
+Input: abc cba Core eroC (N = 4)  -> 200 2   (all words are paired)
+Input: aba abc           (N = 2)  -> 412 0   (lonely palindrome "aba")
+Input: abc def           (N = 2)  -> 404 0   (no pairs)
+
+
+COMPLEXITY
+----------
+- Time: O(total length of all strings), because we read each word once,
+  reverse it once, and dictionary lookups are fast.
+- Memory: O(total length of all strings) for the dictionary.
+
+
+NOTE ABOUT THE INPUT FORMAT
+---------------------------
+The statement says "one fragment per line", but the samples show all
+fragments on one line. This solution follows the samples
+(input().split()). If the real tests use one fragment per line, replace
+the reading part with:
+
+    N = int(input())
+    strings = []
+    for i in range(N):
+        strings.append(input())
