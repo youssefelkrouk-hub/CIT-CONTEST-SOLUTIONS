@@ -1,0 +1,64 @@
+Problem G - Mirror Status Protocol
+
+In 2026, the CIT Network collapsed. THE CORE fragmented itself into N encrypted fragments and scattered them across the territory. Operators have recovered these fragments, but the network is still unstable.
+
+Before restoring THE CORE, the system demands a status report. You must determine how many mirror pairs exist among the fragments and return the correct network status code.
+
+A mirror pair is two fragments where one is the exact reverse of the other.
+A fragment that is its own reverse (a palindrome) can only pair with another identical palindrome fragment.
+
+Input Format
+The first line contains a single integer N - the number of fragments.
+The next N lines each contain a single string S_i - one recovered fragment.
+
+Constraints
+1 <= N <= 10^5
+1 <= |S_i| <= 10^5
+The sum of lengths of all strings does not exceed 10^5
+Strings consist of printable ASCII characters (no spaces at the start or end)
+
+Output Format
+Print two space-separated values on a single line: STATUS_CODE PAIR_COUNT
+
+STATUS_CODE is determined by the following rules, evaluated in priority order:
+
+Priority 1 - Code 500 (Internal Server Error)
+Input is malformed. N does not match the number of fragment lines, or N is not a valid integer.
+
+Priority 2 - Code 412 (Precondition Failed)
+At least one palindrome fragment appears an odd number of times, leaving it unpaired.
+
+Priority 3 - Code 404 (Not Found)
+No mirror pairs exist at all.
+
+Priority 4 - Code 200 (OK)
+Every fragment is perfectly paired. 2 x PAIR_COUNT == N
+
+Priority 5 - Code 202 (Accepted)
+At least one mirror pair exists, but some fragments remain unpaired.
+
+If multiple conditions apply, the higher priority (lower number) rule wins.
+PAIR_COUNT is always the number of valid unordered mirror pairs, regardless of status.
+
+Sample Input 0
+5
+abc cba Core eroC xyz
+
+Sample Output 0
+202 2
+
+Explanation 0
+abc <-> cba : 1 pair
+Core <-> eroC : 1 pair
+xyz : unpaired
+Total pairs = 2. Not all fragments are paired, and no palindrome is stranded. Status = 202.
+
+Sample Input 1
+4
+abc cba Core eroC
+
+Sample Output 1
+200 2
+
+Explanation 1
+All 4 fragments form 2 perfect mirror pairs. 2 x 2 == 4. Status = 200.
