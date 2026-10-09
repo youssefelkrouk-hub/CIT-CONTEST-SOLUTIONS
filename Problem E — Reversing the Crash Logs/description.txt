@@ -1,0 +1,38 @@
+Problem E - Reversing the Crash Logs
+
+During THE CRASH, THE CORE injected a malicious corruption script into the network servers that reversed every incoming log message to hide unauthorized system access.
+
+As an Operator, you have extracted a batch of corrupted log messages from the network archives. To track THE CORE's escape trajectory, you must examine these corrupted log entries and determine how many of them originally contained the security keyword "citlogin" before the reversal occurred.
+
+You are given n corrupted strings representing system log messages. During the system failure, each log message was completely reversed (e.g., the string "abc" became "cba").
+
+A log entry is considered suspicious if its original (unreversed) text contained the substring "citlogin" (case-sensitive).
+
+Your task is to:
+1. Identify all suspicious log entries by reconstructing their original text.
+2. Output the total number of suspicious log entries found.
+
+Input Format
+The first line contains a single integer n - the total number of corrupted log messages.
+The next n lines each contain a single non-empty string - the corrupted (reversed) log message.
+
+Constraints
+Each string contains only lowercase English letters (a-z) and digits (0-9).
+The sum of lengths across all strings is bounded (exact limit not provided).
+
+Output Format
+Print a single integer - the count of log messages whose original text contained the substring "citlogin".
+
+Sample Input 0
+4
+nigolticecur 304nigol nigoltic syslog_citlogin_ok
+
+Sample Output 0
+2
+
+Sample Input 1
+3
+core_crash_2026 firewall_alert status_ok
+
+Sample Output 1
+0
