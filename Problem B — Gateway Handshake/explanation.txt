@@ -1,0 +1,187 @@
+Problem B - Gateway Handshake
+Explanation of the solution
+==================================================
+
+THE PROBLEM IN ONE SENTENCE
+---------------------------
+We have n tokens and a target T. We must find two different positions
+i < j such that arr[i] + arr[j] = T. If several pairs exist, we choose
+the smallest i, then the smallest j. We print the 1-based positions, or
+"-1 -1" if no pair exists.
+
+Example: T = 10, tokens = 2 7 11 15 3
+    7 + 3 = 10, at positions 2 and 5 (1-based).
+
+Output:
+    2 5
+
+
+THE CODE
+--------
+n, t = map(int, input().split())
+arr = list(map(int, input().split()))
+
+pos = {}  # value -> list of indices (1-based) in increasing order
+for idx, v in enumerate(arr, 1):
+    pos.setdefault(v, []).append(idx)
+
+best = None
+for i, v in enumerate(arr, 1):
+    need = t - v
+    if need in pos:
+        for j in pos[need]:
+            if j > i:
+                best = (i, j)
+                break
+    if best:
+        break
+
+if best:
+    print(best[0], best[1])
+else:
+    print(-1, -1)
+
+
+THE MAIN IDEA
+-------------
+For each token v at position i, the partner we need is:
+
+    need = T - v
+
+So the question becomes: "Is the value need somewhere AFTER position i?"
+To answer fast, we first store where each value appears (a dictionary).
+
+
+STEP 1 - READ THE INPUT
+-----------------------
+    n, t = map(int, input().split())
+    arr = list(map(int, input().split()))
+
+- n is the number of tokens, t is the target sum.
+- arr is the list of tokens.
+
+
+STEP 2 - STORE THE POSITIONS OF EACH VALUE
+------------------------------------------
+    pos = {}
+    for idx, v in enumerate(arr, 1):
+        pos.setdefault(v, []).append(idx)
+
+- enumerate(arr, 1) gives each value v with its position idx, counting
+  from 1 (the problem uses 1-based positions).
+- pos is a dictionary: key = a value, value = the list of positions
+  where this value appears.
+- setdefault(v, []) creates an empty list for v if it does not exist
+  yet, then append(idx) adds the position.
+- The lists are in increasing order, because we read the array from
+  left to right.
+
+Example: arr = 2 7 11 15 3
+    pos = {2: [1], 7: [2], 11: [3], 15: [4], 3: [5]}
+
+Example with duplicates: arr = 3 3 3 3
+    pos = {3: [1, 2, 3, 4]}
+
+
+STEP 3 - SEARCH FOR THE FIRST VALID PAIR
+----------------------------------------
+    best = None
+    for i, v in enumerate(arr, 1):
+        need = t - v
+        if need in pos:
+            for j in pos[need]:
+                if j > i:
+                    best = (i, j)
+                    break
+        if best:
+            break
+
+- best stays None until we find a pair.
+- We go through the positions i from left to right.
+- need = t - v is the value that must be paired with v.
+- "need in pos": does this value exist in the array at all?
+- If yes, we look through its positions (in increasing order) and take
+  the first one with j > i. This guarantees:
+    * i and j are different (j > i),
+    * j is the smallest possible for this i.
+- "if best: break" stops everything as soon as a pair is found.
+
+Why does this give the correct pair?
+    * We scan i from the smallest position, so the first i that has a
+      partner is the smallest possible i.
+    * For that i, the positions list is sorted, so the first j > i is
+      the smallest possible j.
+  This matches the tie-break rules of the statement exactly.
+
+
+STEP 4 - PRINT THE ANSWER
+-------------------------
+    if best:
+        print(best[0], best[1])
+    else:
+        print(-1, -1)
+
+- If a pair was found, best = (i, j) and we print both positions.
+- Otherwise, we print -1 -1.
+
+
+FULL EXAMPLE
+------------
+Input:
+    5 10
+    2 7 11 15 3
+
+pos = {2: [1], 7: [2], 11: [3], 15: [4], 3: [5]}
+
+    i = 1, v = 2   -> need = 8   -> not in pos
+    i = 2, v = 7   -> need = 3   -> in pos, positions [5]
+                                    5 > 2 -> best = (2, 5), stop
+
+Output:
+    2 5
+
+
+EXAMPLE WITH NO PAIR
+--------------------
+Input:
+    4 5
+    1 2 8 9
+
+    i = 1, v = 1 -> need = 4   -> not in pos
+    i = 2, v = 2 -> need = 3   -> not in pos
+    i = 3, v = 8 -> need = -3  -> not in pos
+    i = 4, v = 9 -> need = -4  -> not in pos
+
+best is still None.
+
+Output:
+    -1 -1
+
+
+EXAMPLE WITH DUPLICATES
+-----------------------
+Input:
+    4 6
+    3 3 3 3
+
+pos = {3: [1, 2, 3, 4]}
+
+    i = 1, v = 3 -> need = 3 -> positions [1, 2, 3, 4]
+        j = 1 is not > 1, skip
+        j = 2 is > 1 -> best = (1, 2)
+
+Output:
+    1 2
+
+The check j > i is what prevents using the same token twice.
+
+
+COMPLEXITY
+----------
+- Building the dictionary: O(n).
+- Searching: for each i, the inner loop stops at the first j > i, so in
+  most cases the search is fast. In the worst case with many identical
+  values it can be slower.
+- If the constraints are very large, the inner loop can be replaced by
+  a binary search (bisect) on the positions list to guarantee
+  O(n log n).
