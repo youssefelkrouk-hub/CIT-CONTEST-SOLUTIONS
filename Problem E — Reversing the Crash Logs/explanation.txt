@@ -1,0 +1,156 @@
+Problem E - Reversing the Crash Logs
+Explanation of the solution
+==================================================
+
+THE PROBLEM IN ONE SENTENCE
+---------------------------
+We receive N log messages that were all REVERSED by a corruption script.
+We must count how many of them, BEFORE the reversal, contained the word
+"citlogin".
+
+Example: the corrupted log "nigoltic"
+    Reversed back, it becomes "citlogin" -> suspicious (counts).
+
+Example: the corrupted log "304nigol"
+    Reversed back, it becomes "login403" -> no "citlogin" (does not count).
+
+
+THE CODE
+--------
+import sys
+
+N = int(input())
+strings = input().split()
+# write your code here
+
+# if the logs are given one per line, read the rest
+while len(strings) < N:
+    line = sys.stdin.readline()
+    if not line:
+        break
+    strings += line.split()
+
+target = "citlogin"[::-1]
+
+count = 0
+for s in strings[:N]:
+    if target in s:
+        count = count + 1
+
+print(count)
+
+
+THE MAIN IDEA (THE TRICK)
+-------------------------
+The obvious way is: reverse every string, then check if it contains
+"citlogin". But there is a shortcut.
+
+If a string s, once reversed, contains "citlogin", then s itself must
+contain "citlogin" written backwards, which is "nigoltic".
+
+    "citlogin"[::-1]  ->  "nigoltic"
+
+So we do NOT need to reverse every log. We just check if the corrupted
+log contains "nigoltic".
+
+Picture it:
+    original log :   ...  c i t l o g i n  ...
+    corrupted log:   ...  n i g o l t i c  ...
+
+
+STEP 1 - READ THE INPUT
+-----------------------
+    N = int(input())
+    strings = input().split()
+
+- N is the number of log messages.
+- strings is the list of logs. split() cuts the line at spaces.
+  Example: "nigolticecur 304nigol nigoltic syslog_citlogin_ok"
+      -> ["nigolticecur", "304nigol", "nigoltic", "syslog_citlogin_ok"]
+- Note: we do not use map(int, ...) here because logs contain letters,
+  and int() would crash on them.
+
+
+STEP 2 - HANDLE ONE LOG PER LINE
+--------------------------------
+    while len(strings) < N:
+        line = sys.stdin.readline()
+        if not line:
+            break
+        strings += line.split()
+
+- The statement says one log per line, but the samples show them all on
+  one line. This loop supports both formats.
+- If the first line did not give N logs, we keep reading the next lines
+  and add their words to the list until we have N logs.
+- "if not line: break" stops the loop if there is no more input, to
+  avoid an infinite loop.
+
+
+STEP 3 - PREPARE THE TARGET
+---------------------------
+    target = "citlogin"[::-1]
+
+- [::-1] reverses a string in Python.
+- target = "nigoltic": the word we look for inside the corrupted logs.
+
+
+STEP 4 - COUNT THE SUSPICIOUS LOGS
+----------------------------------
+    count = 0
+    for s in strings[:N]:
+        if target in s:
+            count = count + 1
+
+- count starts at 0.
+- We go through each log s (strings[:N] keeps only the first N logs).
+- "target in s" is True if "nigoltic" appears anywhere inside s.
+- If it does, we add 1 to count.
+
+    print(count)
+
+- We print the number of suspicious logs.
+
+
+FULL EXAMPLE
+------------
+Input:
+    4
+    nigolticecur 304nigol nigoltic syslog_citlogin_ok
+
+target = "nigoltic"
+
+    "nigolticecur"       contains "nigoltic"  -> count = 1
+        (original: "rucecitlogin", which contains "citlogin")
+    "304nigol"           does not contain it  -> count stays 1
+    "nigoltic"           contains "nigoltic"  -> count = 2
+    "syslog_citlogin_ok" does not contain it  -> count stays 2
+        (it contains "citlogin" forward, but the logs are already
+         reversed, so only "nigoltic" matters)
+
+Output:
+    2
+
+
+SECOND EXAMPLE
+--------------
+Input:
+    3
+    core_crash_2026 firewall_alert status_ok
+
+None of the logs contains "nigoltic", so the output is 0.
+
+
+COMMON MISTAKE
+--------------
+Searching for "citlogin" directly in the corrupted logs is wrong.
+The logs are already reversed, so we must search for the reversed word
+"nigoltic" (or reverse each log first and search for "citlogin").
+That is why "syslog_citlogin_ok" does NOT count in the first example.
+
+
+COMPLEXITY
+----------
+- Time: O(total length of all strings), because each log is scanned
+  once for the word "nigoltic".
+- Memory: O(total length of all strings) to store the logs.
