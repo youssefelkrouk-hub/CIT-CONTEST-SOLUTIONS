@@ -1,0 +1,179 @@
+Problem F - Core Reactor Power Balance
+Explanation of the solution
+==================================================
+
+THE PROBLEM IN ONE SENTENCE
+---------------------------
+We have n cells in a row, each with an energy value. We must cut the row
+into at most k contiguous groups (sub-reactors). The load of a group is
+the sum of its cells. We want the smallest possible value of the
+BIGGEST group load.
+
+Example: cells = 2 4 7 3 5, k = 3
+    Best split: [2, 4] [7] [3, 5]  -> loads 6, 7, 8
+    The biggest load is 8, and no split gives a smaller maximum.
+    Answer: 8
+
+
+THE CODE
+--------
+n, k = map(int, input().split())
+numbers = list(map(int, input().split()))
+# write your code here
+
+low = max(numbers)
+high = sum(numbers)
+
+while low < high:
+    limit = (low + high) // 2
+
+    groups = 1
+    current = 0
+    for x in numbers:
+        if current + x > limit:
+            groups = groups + 1
+            current = x
+        else:
+            current = current + x
+
+    if groups <= k:
+        high = limit
+    else:
+        low = limit + 1
+
+print(low)
+
+
+THE MAIN IDEA
+-------------
+Instead of searching for the split directly, we GUESS the answer and
+test if the guess works. This technique is called "binary search on the
+answer".
+
+A guess "limit" works if we can cut the cells into at most k groups
+where every group has a sum <= limit.
+
+Key observation: if a limit works, any bigger limit also works.
+If a limit fails, any smaller limit also fails.
+This is why we can use binary search.
+
+
+STEP 1 - READ THE INPUT
+-----------------------
+    n, k = map(int, input().split())
+    numbers = list(map(int, input().split()))
+
+- n = number of cells, k = maximum number of groups.
+- numbers = the list of energy values.
+
+
+STEP 2 - FIND THE RANGE OF POSSIBLE ANSWERS
+-------------------------------------------
+    low = max(numbers)
+    high = sum(numbers)
+
+- The answer can never be smaller than max(numbers): the biggest cell
+  must fit in some group.
+- The answer can never be bigger than sum(numbers): that is what we get
+  with a single group containing everything.
+- So the answer is between low and high.
+
+Example: numbers = 2 4 7 3 5  ->  low = 7, high = 21
+
+
+STEP 3 - BINARY SEARCH LOOP
+---------------------------
+    while low < high:
+        limit = (low + high) // 2
+
+- We take the middle value of the range as our guess (limit).
+- We keep going while the range still has more than one value.
+
+
+STEP 4 - TEST THE GUESS (GREEDY)
+--------------------------------
+    groups = 1
+    current = 0
+    for x in numbers:
+        if current + x > limit:
+            groups = groups + 1
+            current = x
+        else:
+            current = current + x
+
+- We fill groups from left to right.
+- current = sum of the group we are building.
+- If adding x would go over limit, we close the group and start a new
+  one with x. Otherwise we add x to the current group.
+- groups counts how many groups we used.
+- Filling each group as much as possible uses the fewest groups, so if
+  this fails, no other split can work for that limit.
+
+
+STEP 5 - MOVE THE RANGE
+-----------------------
+    if groups <= k:
+        high = limit
+    else:
+        low = limit + 1
+
+- groups <= k: the guess works. It might be the answer, or the answer
+  might be smaller. So we keep limit and try smaller: high = limit.
+- groups > k: the guess is too small. The answer must be bigger:
+  low = limit + 1.
+- When low == high, the range has one value left, and it is the answer.
+
+    print(low)
+
+
+FULL EXAMPLE
+------------
+Input:
+    5 3
+    2 4 7 3 5
+
+low = 7, high = 21
+
+Round 1: limit = (7 + 21) // 2 = 14
+    Groups: [2 4 7] = 13, then adding 3 gives 16 > 14 so new group
+            [3 5] = 8        -> 2 groups <= 3 -> works
+    high = 14
+
+Round 2: limit = (7 + 14) // 2 = 10
+    Groups: [2 4] = 6 (adding 7 gives 13 > 10), [7 3] = 10, [5]
+            -> 3 groups <= 3 -> works
+    high = 10
+
+Round 3: limit = (7 + 10) // 2 = 8
+    Groups: [2 4] = 6, [7] = 7 (adding 3 gives 10 > 8), [3 5] = 8
+            -> 3 groups <= 3 -> works
+    high = 8
+
+Round 4: limit = (7 + 8) // 2 = 7
+    Groups: [2 4] = 6, [7] = 7, [3] = 3 (adding 5 gives 8 > 7), [5]
+            -> 4 groups > 3 -> fails
+    low = 8
+
+Now low == high == 8. Output: 8
+
+
+OTHER EXAMPLE
+-------------
+Input: 4 4 / 1 2 3 4
+low = 4, high = 10. With k = 4 we can put each cell alone, so the
+answer is the biggest cell: 4.
+
+
+COMPLEXITY
+----------
+- Each test of a guess costs O(n).
+- The binary search makes about log2(sum) rounds.
+- Total time: O(n log(sum)). This is fast even for large inputs.
+- Python integers have no overflow, so big sums (64-bit or more) are
+  handled automatically.
+
+
+ASSUMPTION
+----------
+The code assumes the energy values are not negative (the constraints
+were not given in the statement).
