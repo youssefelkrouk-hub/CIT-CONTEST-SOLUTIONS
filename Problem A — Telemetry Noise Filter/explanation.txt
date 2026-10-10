@@ -1,0 +1,117 @@
+Problem A - Telemetry Noise Filter
+Explanation of the solution
+==================================================
+
+THE PROBLEM IN ONE SENTENCE
+---------------------------
+We receive n numbers (telemetry packets). Negative numbers are noise.
+We must remove them, keep the other numbers (0 included) in the same
+order, then print how many remain and the remaining numbers.
+
+Example: -3 10 -1 0 5
+    Remove -3 and -1 -> 10 0 5 remain (3 numbers).
+
+Output:
+    3
+    10 0 5
+
+
+THE CODE
+--------
+n = int(input())
+arr = list(map(int, input().split()))
+
+result = [x for x in arr if x >= 0]
+
+print(len(result))
+print(*result)
+
+
+STEP 1 - READ THE INPUT
+-----------------------
+    n = int(input())
+    arr = list(map(int, input().split()))
+
+- n is the number of packets.
+- input().split() cuts the second line into pieces of text:
+      "-3 10 -1 0 5" -> ["-3", "10", "-1", "0", "5"]
+- map(int, ...) converts each piece into an integer.
+- list(...) puts everything in a list: [-3, 10, -1, 0, 5]
+
+
+STEP 2 - FILTER THE NEGATIVE VALUES
+-----------------------------------
+    result = [x for x in arr if x >= 0]
+
+- This is a list comprehension, a short way to write a loop.
+  Read it as: "for each x in arr, keep x if x >= 0".
+- The long version is:
+
+      result = []
+      for x in arr:
+          if x >= 0:
+              result.append(x)
+
+- Why >= 0 and not > 0? The statement says to keep NON-NEGATIVE values,
+  and 0 is not negative. Sample 0 confirms it: the 0 stays in the output.
+- The order is kept automatically, because we read the list from left
+  to right and never reorder anything.
+
+
+STEP 3 - PRINT THE RESULT
+-------------------------
+    print(len(result))
+    print(*result)
+
+- len(result) gives the number of remaining elements.
+- print(*result) prints the elements separated by spaces.
+  The star * "unpacks" the list:
+      print(*[10, 0, 5])   is the same as   print(10, 0, 5)
+  and prints:  10 0 5
+- Without the star, print(result) would show [10, 0, 5] with brackets
+  and commas, which is wrong for this problem.
+
+
+THE CASE WHERE EVERYTHING IS REMOVED
+------------------------------------
+Input:
+    4
+    -500 -1 -9999 -42
+
+- result becomes an empty list [].
+- print(len(result)) prints 0.
+- print(*result) has nothing to unpack, so it prints an empty line.
+  This is exactly what the statement asks: if the count is 0, leave
+  the second line empty.
+
+Output:
+    0
+    (empty line)
+
+
+FULL EXAMPLE
+------------
+Input:
+    5
+    -3 10 -1 0 5
+
+    arr = [-3, 10, -1, 0, 5]
+
+    -3 >= 0 ?  No   -> removed
+    10 >= 0 ?  Yes  -> kept
+    -1 >= 0 ?  No   -> removed
+     0 >= 0 ?  Yes  -> kept
+     5 >= 0 ?  Yes  -> kept
+
+    result = [10, 0, 5]
+
+Output:
+    3
+    10 0 5
+
+
+COMPLEXITY
+----------
+- Time: O(n). We go through the list only once.
+- Memory: O(n) for the result list.
+- This is optimal, since every number must be read at least once.

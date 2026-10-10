@@ -4,4 +4,4 @@ arr = list(map(int, input().split()))
 result = [x for x in arr if x >= 0]
 
 print(len(result))
-print(*result)
+print(*result) # pour aficher une liste=[10, 0, 5] comme 10 0 5
