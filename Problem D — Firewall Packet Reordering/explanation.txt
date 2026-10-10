@@ -1,0 +1,175 @@
+Problem D - Firewall Packet Reordering
+Explanation of the solution
+==================================================
+
+THE PROBLEM IN ONE SENTENCE
+---------------------------
+We have n packets. Negative numbers are "corrupted" packets (0 is a
+normal packet). We must find the LONGEST contiguous block of packets
+that contains AT MOST k corrupted packets, and print its length.
+
+Example: k = 2, packets = 1 -2 3 4 -5 -6 7
+    The block [1, -2, 3, 4, -5] has length 5 and contains 2 negative
+    numbers (-2 and -5). No longer valid block exists.
+
+Output:
+    5
+
+
+THE CODE
+--------
+n, k = map(int, input().split())
+arr = list(map(int, input().split()))
+
+left = 0
+neg = 0
+best = 0
+
+for right in range(n):
+    if arr[right] < 0:
+        neg += 1
+    while neg > k:
+        if arr[left] < 0:
+            neg -= 1
+        left += 1
+    best = max(best, right - left + 1)
+
+print(best)
+
+
+THE MAIN IDEA: THE SLIDING WINDOW
+---------------------------------
+Imagine a window on the list, from position left to position right.
+
+    [ 1  -2   3   4  -5 ]  -6   7
+      ^                ^
+     left            right
+
+- We move the right side forward one packet at a time.
+- We always keep the window valid (at most k negatives inside).
+- If the window becomes invalid, we move the left side forward until it
+  is valid again.
+- The longest valid window we see is the answer.
+
+Why is this fast? Each of left and right only moves forward and never
+goes back, so every packet is visited at most twice.
+
+
+STEP 1 - READ THE INPUT
+-----------------------
+    n, k = map(int, input().split())
+    arr = list(map(int, input().split()))
+
+- n is the number of packets, k the maximum number of corrupted packets
+  allowed in a window.
+- arr is the list of packets.
+
+
+STEP 2 - PREPARE THE VARIABLES
+------------------------------
+    left = 0
+    neg = 0
+    best = 0
+
+- left: the start position of the window.
+- neg: how many negative numbers are currently inside the window.
+- best: the length of the longest valid window found so far.
+
+
+STEP 3 - MOVE THE RIGHT SIDE
+----------------------------
+    for right in range(n):
+        if arr[right] < 0:
+            neg += 1
+
+- right goes from 0 to n - 1: it is the end of the window.
+- We add the new packet arr[right] to the window.
+- If it is negative (< 0), neg increases by 1.
+- 0 is not corrupted, so it does not count.
+
+
+STEP 4 - FIX THE WINDOW IF IT IS INVALID
+----------------------------------------
+        while neg > k:
+            if arr[left] < 0:
+                neg -= 1
+            left += 1
+
+- If neg is greater than k, the window has too many corrupted packets.
+- We remove the packet at the left side:
+    * if it was negative, neg decreases by 1,
+    * then left moves one step to the right.
+- We repeat until neg <= k again.
+
+
+STEP 5 - UPDATE THE BEST LENGTH
+-------------------------------
+        best = max(best, right - left + 1)
+
+- The window is now valid, and its length is right - left + 1.
+- We keep the biggest length seen so far.
+
+    print(best)
+
+- At the end, best is the answer.
+
+
+FULL EXAMPLE 1
+--------------
+Input:
+    7 2
+    1 -2 3 4 -5 -6 7
+
+(positions start at 0)
+
+    right=0  value  1  neg=0  window [0..0]  length 1  best=1
+    right=1  value -2  neg=1  window [0..1]  length 2  best=2
+    right=2  value  3  neg=1  window [0..2]  length 3  best=3
+    right=3  value  4  neg=1  window [0..3]  length 4  best=4
+    right=4  value -5  neg=2  window [0..4]  length 5  best=5
+    right=5  value -6  neg=3 > 2, too many negatives:
+                 remove arr[0]=1  (not negative)  left=1
+                 remove arr[1]=-2 (negative)      neg=2, left=2
+             window [2..5]  length 4  best stays 5
+    right=6  value  7  neg=2  window [2..6]  length 5  best stays 5
+
+Output:
+    5
+
+
+FULL EXAMPLE 2
+--------------
+Input:
+    6 0
+    1 0 -1 2 3 -4
+
+With k = 0, no negative number is allowed in the window.
+
+    right=0  value  1  window [0..0]  length 1  best=1
+    right=1  value  0  window [0..1]  length 2  best=2
+    right=2  value -1  neg=1 > 0:
+                 remove 1, remove 0, remove -1 (neg=0)  left=3
+             window is empty, length 0
+    right=3  value  2  window [3..3]  length 1
+    right=4  value  3  window [3..4]  length 2  best stays 2
+    right=5  value -4  neg=1 > 0:
+                 remove 2, remove 3, remove -4 (neg=0)  left=6
+             window is empty, length 0
+
+Output:
+    2
+
+
+SPECIAL CASES
+-------------
+    - If k is at least the number of negative numbers in the list, the
+      whole list is valid and the answer is n.
+    - If k = 0 and every packet is negative, every window is emptied and
+      the answer is 0.
+    - A packet equal to 0 is never corrupted.
+
+
+COMPLEXITY
+----------
+- Time: O(n). left and right each move forward at most n times.
+- Memory: O(1) extra memory (only a few variables), besides the list.
