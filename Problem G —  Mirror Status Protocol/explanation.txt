@@ -165,7 +165,7 @@ COMPLEXITY
 ----------
 - Time: O(total length of all strings), because we read each word once,
   reverse it once, and dictionary lookups are fast.
-- Memory: O(total length of all strings) for the dictionary.
+- Memory: O(total length of all strings) for the dictionary. 
 
 
 NOTE ABOUT THE INPUT FORMAT

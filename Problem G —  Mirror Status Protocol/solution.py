@@ -10,10 +10,10 @@ else:
         if s in count:
             count[s] = count[s] + 1
         else:
-            count[s] = 1
+            count[s] = 1 
 
     pairs = 0
-    odd_palindrome = False
+    odd_palindrome = False 
 
     for s in count:
         r = s[::-1]
