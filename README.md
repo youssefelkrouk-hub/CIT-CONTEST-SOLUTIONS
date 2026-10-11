@@ -10,23 +10,6 @@ restore THE CORE by solving a series of problems.
 </p>
 
 
-## Repository Structure
-
-Each problem has its own folder with two files:
-
-```
-CIT's CONTEST/
-|-- Problem A - Telemetry Noise Filter/
-|   |-- description.txt
-|   |-- solution.py
-|-- Problem B - Gateway Handshake/
-|   |-- description.txt
-|   |-- solution.py
-|-- ...
-```
-
-- `description.txt`: the full problem statement (input, output, samples).
-- `solution.py`: the Python 3 solution, ready to paste into HackerRank.
 
 ## Problems
 
