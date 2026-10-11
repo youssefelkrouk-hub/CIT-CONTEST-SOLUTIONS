@@ -17,10 +17,11 @@ for i in range(n):
 
 # check if there is a valid pair : 
 if len(pairs)>0:
-    #choose the optimal one with  the smallest (i,j)
+    #choose the optimal one with  the smallest tuples  (i,j)
     best=min(pairs)
     print((best[0],best[1]))
-# if not (-1,-1)
-print((-1,-1))
+# if not print  (-1,-1)
+else:
+    print((-1,-1))
 
 
